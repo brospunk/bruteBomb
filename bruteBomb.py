@@ -17,7 +17,6 @@ def parse_arguments():
 
 def read_username(string_or_file_path):
     if os.path.isfile(string_or_file_path):
-        print("[+] File Username Found")
         try:
             with open(string_or_file_path, 'r') as f:
                 return [line.strip() for line in f if line.strip()]
@@ -25,7 +24,6 @@ def read_username(string_or_file_path):
             print(f"Error: Password file '{string_or_file_path}' not found.")
             sys.exit(1)
     else:
-        print("[+] File Username Not Found, username is: ", str(string_or_file_path))
         return [string_or_file_path]
 
 def read_passwords(file_path):
@@ -37,6 +35,7 @@ def read_passwords(file_path):
         sys.exit(1)
 
 def brute_ssh(ip, port, username, passwords):
+    print("[+] SSH BRUTE-FORCE STARTING")
     ssh = paramiko.SSHClient()
     ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
 
@@ -58,6 +57,7 @@ def brute_ssh(ip, port, username, passwords):
             print(f"[SSH] No password found for {usr} on {ip}")
 
 def brute_ftp(ip, port, username, passwords):
+    print("[+] FTP BRUTE-FORCE STARTING")
     for usr in username:
         passwordFound = False
         for pwd in passwords:
@@ -78,6 +78,7 @@ def brute_ftp(ip, port, username, passwords):
             print(f"[FTP] No password found for {usr} on {ip}")
 
 def brute_http(ip, username, passwords):
+    print("[+] FTP BRUTE-FORCE STARTING")
     for pwd in passwords:
         url = f"http://{ip}/"
         try:
