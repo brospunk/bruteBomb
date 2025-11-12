@@ -12,6 +12,12 @@ def parse_arguments():
     parser.add_argument("-ip", "--ip", required=True, help="Target IP address")
     parser.add_argument("-u", "--username", required=True, help="Username (can be a file or a single string)")
     parser.add_argument("-p", "--passwords", required=True, help="Password file or list of passwords")
+    
+    #EXAMPLES:
+    #python bruteBomb.py -c ssh -ip 10.210.96.20 -u "username" -p /file/path/password.txt
+    #python bruteBomb.py -c ssh -ip 10.210.96.20 -u username.txt -p /file/path/password.txt
+    #python bruteBomb.py -c ftp -ip 10.210.96.20 -u "username" -p /file/path/password.txt
+    #python bruteBomb.py -c ftp -ip 10.210.96.20 -u username.txt -p /file/path/password.txt
     return parser.parse_args()
 
 
