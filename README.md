@@ -3,15 +3,17 @@
 ## Brute-force SSH, FTP e HTTP/S
 ## Strumento da linea di comando per effettuare test di sicurezza su servizi di autenticazione.
 
-# ⚠️ Disclaimer ⚠️
+## ⚠️ Disclaimer ⚠️
 
-## Questo tool è pensato esclusivamente per test di sicurezza autorizzati (penetration testing, audit interni, esercitazioni).
-## L'uso non autorizzato su sistemi di terzi può violare leggi locali e internazionali.
-## L’autore non è responsabile per eventuali usi impropri.
+### Questo tool è pensato esclusivamente per test di sicurezza autorizzati (penetration testing, audit interni, esercitazioni).
+### L'uso non autorizzato su sistemi di terzi può violare leggi locali e internazionali.
+### L’autore non è responsabile per eventuali usi impropri.
 
-python bruteBomb3.py --help                                             
-usage: bruteBomb.py [-h] -c {ssh,ftp,https,http} [-port PORT] -ip IP -u USERNAME -p PASSWORDS [-H HEADER [HEADER ...]] [-d DATA [DATA ...]] [-vd VALUEDATA [VALUEDATA ...]] [-bc BADCONDITION [BADCONDITION ...]]
-                    [-gc GOODCONDITION [GOODCONDITION ...]]
+## 🔧 Help
+
+```bash
+python bruteBomb3.py --help
+usage: bruteBomb.py [-h] -c {ssh,ftp,https,http} [-port PORT] -ip IP -u USERNAME -p PASSWORDS [-H HEADER [HEADER ...]] [-d DATA [DATA ...]] [-vd VALUEDATA [VALUEDATA ...]] [-bc BADCONDITION [BADCONDITION ...]] [-gc GOODCONDITION [GOODCONDITION ...]]
 
 Brute-force SSH, FTP, and HTTP/S
 
@@ -35,6 +37,8 @@ options:
                         La condizione negativa della risposta del server http/s per continuare a bruteforsare
   -gc, --goodCondition GOODCONDITION [GOODCONDITION ...]
                         La condizione positiva della risposta del server http/s per smettere di bruteforsare
+```
+
 
         EXAMPLES:
 
