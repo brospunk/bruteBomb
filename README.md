@@ -1,7 +1,7 @@
 # bruteBomb
 
-## Brute-force SSH, FTP e HTTP/S
-## Strumento da linea di comando per effettuare test di sicurezza su servizi di autenticazione.
+### Brute-force SSH, FTP e HTTP/S
+### Strumento da linea di comando per effettuare test di sicurezza su servizi di autenticazione.
 
 ## ⚠️ Disclaimer ⚠️
 
