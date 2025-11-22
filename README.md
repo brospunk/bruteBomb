@@ -1,3 +1,14 @@
+# bruteBomb
+
+## Brute-force SSH, FTP e HTTP/S
+## Strumento da linea di comando per effettuare test di sicurezza su servizi di autenticazione.
+
+# ⚠️ Disclaimer ⚠️
+
+## Questo tool è pensato esclusivamente per test di sicurezza autorizzati (penetration testing, audit interni, esercitazioni).
+## L'uso non autorizzato su sistemi di terzi può violare leggi locali e internazionali.
+## L’autore non è responsabile per eventuali usi impropri.
+
 python bruteBomb3.py --help                                             
 usage: bruteBomb.py [-h] -c {ssh,ftp,https,http} [-port PORT] -ip IP -u USERNAME -p PASSWORDS [-H HEADER [HEADER ...]] [-d DATA [DATA ...]] [-vd VALUEDATA [VALUEDATA ...]] [-bc BADCONDITION [BADCONDITION ...]]
                     [-gc GOODCONDITION [GOODCONDITION ...]]
