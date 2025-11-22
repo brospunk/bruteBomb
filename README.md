@@ -13,7 +13,17 @@
 
 ```bash
 python bruteBomb3.py --help
-usage: bruteBomb.py [-h] -c {ssh,ftp,https,http} [-port PORT] -ip IP -u USERNAME -p PASSWORDS [-H HEADER [HEADER ...]] [-d DATA [DATA ...]] [-vd VALUEDATA [VALUEDATA ...]] [-bc BADCONDITION [BADCONDITION ...]] [-gc GOODCONDITION [GOODCONDITION ...]]
+usage: bruteBomb.py [-h]
+      -c {ssh,ftp,https,http}
+      [-port PORT]
+      -ip IP
+      -u USERNAME
+      -p PASSWORDS
+      [-H HEADER [HEADER ...]]
+      [-d DATA [DATA ...]]
+      [-vd VALUEDATA [VALUEDATA ...]]
+      [-bc BADCONDITION [BADCONDITION ...]]
+      [-gc GOODCONDITION [GOODCONDITION ...]]
 
 Brute-force SSH, FTP, and HTTP/S
 
@@ -30,13 +40,16 @@ options:
   -H, --header HEADER [HEADER ...]
                         Header HTTP/S. Non sei obbligato ad aggiungerlo
   -d, --data DATA [DATA ...]
-                        Header HTTP/S. I primi due campi da dichiarare sono user e password, puoi aggiungerne altri ma poi devi dichiarare il valore con --valueData
+                        Header HTTP/S. I primi due campi da dichiarare sono user e password,
+                        puoi aggiungerne altri ma poi devi dichiarare il valore con --valueData
   -vd, --valueData VALUEDATA [VALUEDATA ...]
                         Header HTTP/S. Usalo per dare i valori alla data
   -bc, --badCondition BADCONDITION [BADCONDITION ...]
-                        La condizione negativa della risposta del server http/s per continuare a bruteforsare
+                        La condizione negativa della risposta del server http/s per continuare a
+                        bruteforsare
   -gc, --goodCondition GOODCONDITION [GOODCONDITION ...]
-                        La condizione positiva della risposta del server http/s per smettere di bruteforsare
+                        La condizione positiva della risposta del server http/s per smettere di
+                        bruteforsare
 ```
 
 
