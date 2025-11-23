@@ -1,7 +1,7 @@
 import argparse
 import paramiko
 import ftplib
-import requests, re
+import requests, socket
 import sys, os
 import time
 
@@ -167,32 +167,35 @@ def brute_http(url, username, passwords, header, data, valueData, negativeCondit
     for user in username:
         passwordFound = False
         for pwd in passwords:
-            try:
-                datas[data[0]] = user
-                datas[data[1]] = pwd
-                
-                response = requests.post(url, headers=header, data=datas, timeout=5) #auth=(user, pwd)
-                if positiveCondition is None:
-                    for badCondition in negativeCondition: # if all(bad not in str(response.text) for bad in negativeCondition):
-                        if str(badCondition) not in str(response.text):
-                            print("\n[** SERVER RESPONSE SUCCESS **]\n", str(response.text))
-                            print(f"[HTTP] Success: {user}:{pwd}")
-                            passwordFound = True
-                            break
-                        else:
-                            print(f"[HTTP] Failed: {user}:{pwd}")
-                else:
-                    for posCondition in positiveCondition:
-                        if str(posCondition) in str(response.text): # if all(pos in str(response.text) for pos in positiveCondition):
-                            print("\n[** SERVER RESPONSE SUCCESS **]\n", str(response.text))
-                            print(f"[HTTP] Success: {user}:{pwd}")
-                            passwordFound = True
-                            break
-                        else:
-                            print(f"[HTTP] Failed: {user}:{pwd}")
-            except requests.exceptions.RequestException as e:
-                print(f"[HTTP] Error: {e}")
-                time.sleep(1)
+            retry = True
+            while retry:
+                try:
+                    datas[data[0]] = user
+                    datas[data[1]] = pwd
+                    
+                    response = requests.post(url, headers=header, data=datas, timeout=5) #auth=(user, pwd)
+                    retry = False
+                    if positiveCondition is None:
+                        for badCondition in negativeCondition: # if all(bad not in str(response.text) for bad in negativeCondition):
+                            if str(badCondition) not in str(response.text):
+                                print("\n[** SERVER RESPONSE SUCCESS **]\n", str(response.text))
+                                print(f"[HTTP] Success: {user}:{pwd}")
+                                passwordFound = True
+                                break
+                            else:
+                                print(f"[HTTP] Failed: {user}:{pwd}")
+                    else:
+                        for posCondition in positiveCondition:
+                            if str(posCondition) in str(response.text): # if all(pos in str(response.text) for pos in positiveCondition):
+                                print("\n[** SERVER RESPONSE SUCCESS **]\n", str(response.text))
+                                print(f"[HTTP] Success: {user}:{pwd}")
+                                passwordFound = True
+                                break
+                            else:
+                                print(f"[HTTP] Failed: {user}:{pwd}")
+                except requests.exceptions.RequestException as e:
+                    print(f"[HTTP] Error: {e}")
+                    time.sleep(1)
             if passwordFound: break
         if passwordFound == False:
             print(f"[HTTP] No password found for {user} on {url}")
@@ -215,32 +218,35 @@ def brute_https(url, username, passwords, header, data, valueData, negativeCondi
     for user in username:
         passwordFound = False
         for pwd in passwords:
-            try:
-                datas[data[0]] = user
-                datas[data[1]] = pwd
-                
-                response = requests.post(url, headers=header, data=datas, timeout=5) #auth=(user, pwd)
-                if positiveCondition is None:
-                    for badCondition in negativeCondition:
-                        if str(badCondition) not in str(response.text):
-                            print("[** SERVER RESPONSE SUCCESS **]\n", str(response.text))
-                            print(f"[HTTPS] Success: {user}:{pwd}")
-                            passwordFound = True
-                            break
-                        else:
-                            print(f"[HTTPS] Failed: {user}:{pwd}")
-                else:
-                    for posCondition in positiveCondition:
-                        if str(posCondition) in str(response.text):
-                            print("[** SERVER RESPONSE SUCCESS **]\n", str(response.text))
-                            print(f"[HTTPS] Success: {user}:{pwd}")
-                            passwordFound = True
-                            break
-                        else:
-                            print(f"[HTTPS] Failed: {user}:{pwd}")
-            except requests.exceptions.RequestException as e:
-                print(f"[HTTPS] Error: {e}")
-                time.sleep(1)
+            retry = True
+            while retry:
+                try:
+                    datas[data[0]] = user
+                    datas[data[1]] = pwd
+                    
+                    response = requests.post(url, headers=header, data=datas, timeout=5) #auth=(user, pwd)
+                    retry = False
+                    if positiveCondition is None:
+                        for badCondition in negativeCondition:
+                            if str(badCondition) not in str(response.text):
+                                print("[** SERVER RESPONSE SUCCESS **]\n", str(response.text))
+                                print(f"[HTTPS] Success: {user}:{pwd}")
+                                passwordFound = True
+                                break
+                            else:
+                                print(f"[HTTPS] Failed: {user}:{pwd}")
+                    else:
+                        for posCondition in positiveCondition:
+                            if str(posCondition) in str(response.text):
+                                print("[** SERVER RESPONSE SUCCESS **]\n", str(response.text))
+                                print(f"[HTTPS] Success: {user}:{pwd}")
+                                passwordFound = True
+                                break
+                            else:
+                                print(f"[HTTPS] Failed: {user}:{pwd}")
+                except requests.exceptions.RequestException as e:
+                    print(f"[HTTPS] Error: {e}")
+                    time.sleep(1)
             if passwordFound: break
         if passwordFound == False:
             print(f"[HTTPS] No password found for {user} on {url}")
